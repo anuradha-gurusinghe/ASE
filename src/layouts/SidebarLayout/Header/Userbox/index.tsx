@@ -69,7 +69,7 @@ function HeaderUserbox() {
         setUser(res.data);
       }
     });
-  }, [])
+  }, []);
 
   const ref = useRef<any>(null);
   const [isOpen, setOpen] = useState<boolean>(false);
@@ -88,73 +88,7 @@ function HeaderUserbox() {
     window.location.href = '/sign-in';
   };
 
-  return (
-    <>
-      <UserBoxButton color="secondary" ref={ref} onClick={handleOpen}>
-        <Avatar variant="rounded" alt={isUser.name} src={''} />
-        <Hidden mdDown>
-          <UserBoxText>
-            <UserBoxLabel variant="body1">{isUser.name}</UserBoxLabel>
-            <UserBoxDescription variant="body2">
-              {isUser.role}
-            </UserBoxDescription>
-          </UserBoxText>
-        </Hidden>
-        <Hidden smDown>
-          <ExpandMoreTwoToneIcon sx={{ ml: 1 }} />
-        </Hidden>
-      </UserBoxButton>
-      <Popover
-        anchorEl={ref.current}
-        onClose={handleClose}
-        open={isOpen}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-      >
-        <MenuUserBox sx={{ minWidth: 210 }} display="flex">
-          <Avatar variant="rounded" alt={isUser.name} src={''} />
-          <UserBoxText>
-            <UserBoxLabel variant="body1">{isUser.name}</UserBoxLabel>
-            <UserBoxDescription variant="body2">
-              {isUser.role}
-            </UserBoxDescription>
-          </UserBoxText>
-        </MenuUserBox>
-        <Divider sx={{ mb: 0 }} />
-        <List sx={{ p: 1 }} component="nav">
-          <ListItem button to="/management/profile/details" component={NavLink}>
-            <AccountBoxTwoToneIcon fontSize="small" />
-            <ListItemText primary="My Profile" />
-          </ListItem>
-          {/* <ListItem button to="/dashboards/messenger" component={NavLink}>
-            <InboxTwoToneIcon fontSize="small" />
-            <ListItemText primary="Messenger" />
-          </ListItem> */}
-          <ListItem
-            button
-            to="/management/profile/settings"
-            component={NavLink}
-          >
-            <AccountTreeTwoToneIcon fontSize="small" />
-            <ListItemText primary="Account Settings" />
-          </ListItem>
-        </List>
-        <Divider />
-        <Box sx={{ m: 1 }}>
-          <Button color="primary" onClick={logout} fullWidth>
-            <LockOpenTwoToneIcon sx={{ mr: 1 }} />
-            Sign out
-          </Button>
-        </Box>
-      </Popover>
-    </>
-  );
+  return <></>;
 }
 
 export default HeaderUserbox;

@@ -1,144 +1,219 @@
-import { useState } from 'react';
-
-import { Helmet } from 'react-helmet-async';
-
-import TopBarContent from './TopBarContent';
-import BottomBarContent from './BottomBarContent';
-import SidebarContent from './SidebarContent';
-import ChatContent from './ChatContent';
-import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
-
-import Scrollbar from 'src/components/Scrollbar';
-
+import { useEffect, useState } from 'react';
 import {
-  Box,
-  styled,
-  Divider,
-  Drawer,
-  IconButton,
-  useTheme
-} from '@mui/material';
+  getAllData,
+  addData,
+  updateData,
+  deleteData
+} from 'src/http/http-requests';
 
-const RootWrapper = styled(Box)(
-  ({ theme }) => `
-       height: calc(100vh - ${theme.header.height});
-       display: flex;
-`
-);
+import InputComponent from 'src/components/InputComponent';
+import ModalComponent from 'src/components/Modal';
+import CardComponent from 'src/components/card';
+import CircularIndeterminate from 'src/components/progress';
 
-const Sidebar = styled(Box)(
-  ({ theme }) => `
-        width: 300px;
-        background: ${theme.colors.alpha.white[100]};
-        border-right: ${theme.colors.alpha.black[10]} solid 1px;
-`
-);
+const VehicleList = () => {
+  const [requests, setRequests] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [stations, setStations] = useState([]);
+  const [station, setStation] = useState('');
+  const [user, setUser] = useState('');
+  const [search, setSearch] = useState('');
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataUpdateToggle, setDataUpdateToggle] = useState(false);
 
-const ChatWindow = styled(Box)(
-  () => `
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-`
-);
+  const identifyUser = (index) => {
+    const specificUser = requests.find((user) => user.id === index);
+    setUser(specificUser);
+  };
 
-const ChatTopBar = styled(Box)(
-  ({ theme }) => `
-        background: ${theme.colors.alpha.white[100]};
-        border-bottom: ${theme.colors.alpha.black[10]} solid 1px;
-        padding: ${theme.spacing(2)};
-        align-items: center;
-`
-);
+  useEffect(() => {
+    getUserData();
+    getStationData();
+  }, [dataUpdateToggle]);
 
-const IconButtonToggle = styled(IconButton)(
-  ({ theme }) => `
-  width: ${theme.spacing(4)};
-  height: ${theme.spacing(4)};
-  background: ${theme.colors.alpha.white[100]};
-`
-);
+  useEffect(() => {
+    if (allUsers.length > 0) {
+      if (station === 'All') {
+        setRequests(allUsers);
+        return;
+      }
+      const allReqs = requests;
+      const filteredReqs = allReqs.filter((req) => req.station === station);
 
-const DrawerWrapperMobile = styled(Drawer)(
-  () => `
-    width: 340px;
-    flex-shrink: 0;
+      setRequests((_: any) => filteredReqs);
+    }
+  }, [station]);
 
-  & > .MuiPaper-root {
-        width: 340px;
-        z-index: 3;
+  useEffect(() => {
+    if (search) {
+      const searchedUsers = allUsers.filter((user) =>
+        user?.name?.toLowerCase().includes(search.toLowerCase())
+      );
+      setRequests(() => [...searchedUsers]);
+    } else {
+      setRequests(allUsers);
+    }
+  }, [search]);
+
+  const getUserData = async () => {
+    setIsLoading(true);
+    const response = await getAllData('Vehicle');
+
+    setIsLoading(false);
+    const { status, data } = response;
+
+    if (status) {
+      setRequests(data);
+      setAllUsers(data);
+    }
+  };
+
+  const getStationData = async () => {
+    setIsLoading(true);
+    const response = await getAllData('stations');
+    setIsLoading(false);
+    const { status, data } = response;
+    if (status) {
+      data.push({ name: 'All' });
+      setStations(data);
+    }
+  };
+
+  if (isLoading) {
+    return <CircularIndeterminate />;
   }
-`
-);
 
-function ApplicationsMessenger() {
-  const theme = useTheme();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  return (
+    <div style={{ width: '95%', margin: '1rem auto' }}>
+      <ModalComponent setItem={setUser} open={open} setOpen={setOpen} name="">
+        <CreateAndUpdateSection
+          dataUpdateToggle={dataUpdateToggle}
+          setDataUpdateToggle={setDataUpdateToggle}
+          user={user}
+          setOpen={setOpen}
+          setUser={setUser}
+        />
+      </ModalComponent>
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+      {/* list of users */}
+      <ListSection
+        users={requests}
+        setOpen={setOpen}
+        identifyUser={identifyUser}
+      />
+    </div>
+  );
+};
+
+const CreateAndUpdateSection = (props) => {
+  const {
+    setUser,
+    setOpen,
+    user: vehicle,
+    dataUpdateToggle,
+    setDataUpdateToggle
+  } = props;
+
+  const [vehicleNumber, setVehicleNumber] = useState('');
+  const [ownerId, setOwnerId] = useState('');
+  const [chassiNumber, setChassiNumber] = useState('');
+  const [vehicleType, setVehicleType] = useState('');
+  const [status, setStatus] = useState('');
+
+  useEffect(() => {
+    if (vehicle) {
+      const { chassiNumber, id, ownerID, status, vehicleNumber, vehicleType } =
+        vehicle;
+      setVehicleNumber(vehicleNumber);
+      setVehicleType(vehicleType);
+      setChassiNumber(chassiNumber);
+      setOwnerId(ownerID);
+      setStatus(status);
+    }
+  }, [vehicle]);
+
+  return (
+    <div>
+      <InputComponent
+        label="Vehicle Number"
+        value={vehicleNumber}
+        setValue={setVehicleNumber}
+        disabled={true}
+      />
+      <InputComponent
+        label="Vehicle Type"
+        value={vehicleType}
+        setValue={setVehicleType}
+        disabled={true}
+      />
+
+      <InputComponent
+        label="Owner Id"
+        value={ownerId}
+        setValue={setOwnerId}
+        disabled={true}
+      />
+
+      <InputComponent
+        label="Status"
+        value={status}
+        setValue={setStatus}
+        disabled={true}
+      />
+
+      <InputComponent
+        label="Chassi Number"
+        value={chassiNumber}
+        setValue={setChassiNumber}
+        disabled={true}
+      />
+
+      {/* <SpaceBoxComponent>
+        {isLoading ? (
+          <CircularIndeterminate />
+        ) : (
+          <Button
+            disabled={status === 'WAITING'}
+            variant="contained"
+            onClick={addOrUpdateUser}
+          >
+            {status === 'FAILED' ? 'SEND FOR FAILED LIST' : status}
+          </Button>
+        )}
+      </SpaceBoxComponent> */}
+    </div>
+  );
+};
+
+const ListSection = (props) => {
+  const { users: items, setOpen, identifyUser } = props;
+  const editHandler = (index) => {
+    identifyUser(index);
+    setOpen(true);
   };
 
   return (
-    <>
-      <Helmet>
-        <title>Messenger - Applications</title>
-      </Helmet>
-      <RootWrapper className="Mui-FixedWrapper">
-        <DrawerWrapperMobile
-          sx={{
-            display: { lg: 'none', xs: 'inline-block' }
-          }}
-          variant="temporary"
-          anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-        >
-          <Scrollbar>
-            <SidebarContent />
-          </Scrollbar>
-        </DrawerWrapperMobile>
-        <Sidebar
-          sx={{
-            display: { xs: 'none', lg: 'inline-block' }
-          }}
-        >
-          <Scrollbar>
-            <SidebarContent />
-          </Scrollbar>
-        </Sidebar>
-        <ChatWindow>
-          <ChatTopBar
-            sx={{
-              display: { xs: 'flex', lg: 'inline-block' }
-            }}
-          >
-            <IconButtonToggle
-              sx={{
-                display: { lg: 'none', xs: 'flex' },
-                mr: 2
-              }}
-              color="primary"
-              onClick={handleDrawerToggle}
-              size="small"
-            >
-              <MenuTwoToneIcon />
-            </IconButtonToggle>
-            <TopBarContent />
-          </ChatTopBar>
-          <Box flex={1}>
-            <Scrollbar>
-              <ChatContent />
-            </Scrollbar>
-          </Box>
-          <Divider />
-          <BottomBarContent />
-        </ChatWindow>
-      </RootWrapper>
-    </>
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'flex-start',
+        gap: '1rem',
+        flexWrap: 'wrap'
+      }}
+    >
+      {items.map((item) => (
+        <CardComponent
+          mainHeader={item.name}
+          dis={`Vehicle Number - ${item.vehicleNumber}`}
+          editHandler={editHandler}
+          key={item.id}
+          {...item}
+        />
+      ))}
+    </div>
   );
-}
+};
 
-export default ApplicationsMessenger;
+export default VehicleList;

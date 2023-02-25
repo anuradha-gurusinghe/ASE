@@ -54,19 +54,6 @@ function HeaderNotifications() {
 
   return (
     <>
-      <Tooltip arrow title="Notifications">
-        <IconButton color="primary" ref={ref} onClick={handleOpen}>
-          <NotificationsBadge
-            badgeContent={1}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-          >
-            <NotificationsActiveTwoToneIcon />
-          </NotificationsBadge>
-        </IconButton>
-      </Tooltip>
       <Popover
         anchorEl={ref.current}
         onClose={handleClose}
@@ -109,7 +96,6 @@ function HeaderNotifications() {
                 variant="body2"
                 color="text.secondary"
               >
-                {' '}
                 new messages in your inbox
               </Typography>
             </Box>

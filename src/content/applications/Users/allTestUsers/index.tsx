@@ -1,39 +1,276 @@
-import { Helmet } from 'react-helmet-async';
-import PageTitleWrapper from 'src/components/PageTitleWrapper';
-import PageHeader from './PageHeader';
-import Footer from 'src/components/Footer';
-import { Container, Grid } from '@mui/material';
-import RecentOrders from '../../Transactions/RecentOrders';
+import { useEffect, useState } from 'react';
+import {
+  getAllData,
+  addData,
+  updateData,
+  deleteData
+} from '../../../../http/http-requests';
 
-const AllTestUsers = () => {
-    return (
-        <>
-            <Helmet>
-                <title>All Test Users - Applications</title>
-            </Helmet>
+import Button from '@mui/material/Button';
+import InputComponent from '../../../../components/InputComponent';
+import SpaceBoxComponent from '../../../../components/SpaceBoxComponent';
+import ModalComponent from '../../../../components/Modal';
+import CardComponent from '../../../../components/card';
+import CircularIndeterminate from '../../../../components/progress';
+import DropDown from 'src/components/dropdown';
+import FilterComponent from 'src/components/filter';
 
-            <PageTitleWrapper>
-                <PageHeader />
-            </PageTitleWrapper>
+const requestStatus = [
+  'WAITING',
+  'APPROVED',
+  'FAILED',
+  'CANCELED',
+  'ASK_FOR_TIME_CHANGE'
+];
 
-            <Container maxWidth="lg">
-                <Grid
-                container
-                direction="row"
-                justifyContent="center"
-                alignItems="stretch"
-                spacing={3}
-                >
-                    <Grid item xs={12}>
-                        <RecentOrders /> 
-                     {/* create new Table for All Test  users */}
-                    </Grid>
-                </Grid>
-            </Container>
+const StationList = () => {
+  const [requests, setRequests] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [stations, setStations] = useState([]);
+  const [station, setStation] = useState('');
+  const [user, setUser] = useState('');
+  const [search, setSearch] = useState('');
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dataUpdateToggle, setDataUpdateToggle] = useState(false);
 
-            <Footer />
-        </>
-    )
-}
+  const identifyUser = (index) => {
+    const specificUser = requests.find((user) => user.id === index);
+    setUser(specificUser);
+  };
 
-export default AllTestUsers;
+  useEffect(() => {
+    getUserData();
+    getStationData();
+  }, [dataUpdateToggle]);
+
+  useEffect(() => {
+    if (allUsers.length > 0) {
+      if (station === 'All') {
+        setRequests(allUsers);
+        return;
+      }
+      const allReqs = requests;
+      const filteredReqs = allReqs.filter((req) => req.station === station);
+
+      setRequests((_: any) => filteredReqs);
+    }
+  }, [station]);
+
+  useEffect(() => {
+    if (search) {
+      const searchedUsers = allUsers.filter((user) =>
+        user?.name?.toLowerCase().includes(search.toLowerCase())
+      );
+      setRequests(() => [...searchedUsers]);
+    } else {
+      setRequests(allUsers);
+    }
+  }, [search]);
+
+  const getUserData = async () => {
+    setIsLoading(true);
+    const response = await getAllData('requests');
+    setIsLoading(false);
+    const { status, data } = response;
+    if (status) {
+      setRequests(data);
+      setAllUsers(data);
+    }
+  };
+
+  const getStationData = async () => {
+    setIsLoading(true);
+    const response = await getAllData('stations');
+    setIsLoading(false);
+    const { status, data } = response;
+    if (status) {
+      data.push({ name: 'All' });
+      setStations(data);
+    }
+  };
+
+  if (isLoading) {
+    return <CircularIndeterminate />;
+  }
+
+  return (
+    <div style={{ width: '95%', margin: '1rem auto' }}>
+      <FilterComponent
+        arr={stations}
+        value={station}
+        setValue={setStation}
+        label="Select Fuel Station"
+      />
+      <ModalComponent
+        setItem={setUser}
+        open={open}
+        setOpen={setOpen}
+        name="Add New Station"
+      >
+        <CreateAndUpdateSection
+          dataUpdateToggle={dataUpdateToggle}
+          setDataUpdateToggle={setDataUpdateToggle}
+          user={user}
+          setOpen={setOpen}
+          setUser={setUser}
+        />
+      </ModalComponent>
+
+      {/* list of users */}
+      <ListSection
+        users={requests}
+        setOpen={setOpen}
+        identifyUser={identifyUser}
+      />
+    </div>
+  );
+};
+
+const CreateAndUpdateSection = (props) => {
+  const {
+    setUser,
+    setOpen,
+    user: fuStation,
+    dataUpdateToggle,
+    setDataUpdateToggle
+  } = props;
+
+  const [name, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [userId, setUserId] = useState('');
+  const [status, setStatus] = useState('');
+  const [stocks, setStocks] = useState('');
+  const [time, setTime] = useState('');
+  const [pic, setUrl] = useState('');
+  const [isNeedChange, setNeedChange] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (fuStation) {
+      const { name, stocks, district, date, time } = fuStation;
+      setTitle(name);
+      setStatus(district);
+      setStocks(stocks);
+      setDate(date);
+      setTime(time);
+    }
+  }, [fuStation]);
+
+  const addOrUpdateUser = async () => {
+    setIsLoading(true);
+    const doc = {
+      name,
+      stocks,
+      status,
+      date,
+      time
+    };
+    Object.keys(doc).forEach((k) => doc[k] == null && delete doc[k]);
+
+    if (!fuStation) {
+      await addData('requests', doc);
+    } else {
+      await updateData('requests', fuStation.id, doc);
+    }
+    setIsLoading(false);
+    setDataUpdateToggle(!dataUpdateToggle);
+    setOpen(false);
+    setUser(null);
+  };
+
+  const deleteUser = async () => {
+    if (fuStation) {
+      setIsLoading(true);
+      await deleteData('requests', fuStation.id);
+      setIsLoading(false);
+      setDataUpdateToggle(!dataUpdateToggle);
+    }
+    setOpen(false);
+    setUser('');
+  };
+
+  return (
+    <div>
+      <DropDown
+        label="Request status"
+        select={status}
+        setSelect={setStatus}
+        items={requestStatus}
+      />
+
+      <InputComponent
+        label="Date"
+        value={date}
+        setValue={setDate}
+        disabled={status === 'ASK_FOR_TIME_CHANGE' ? false : true}
+      />
+      <InputComponent
+        label="Time"
+        value={time}
+        setValue={setTime}
+        disabled={status === 'ASK_FOR_TIME_CHANGE' ? false : true}
+      />
+      <InputComponent
+        label="Station Name"
+        value={name}
+        setValue={setTitle}
+        disabled={true}
+      />
+
+      <InputComponent
+        type="number"
+        label="Available Stocks"
+        value={stocks}
+        setValue={setStocks}
+        disabled={true}
+      />
+
+      <SpaceBoxComponent>
+        {isLoading ? (
+          <CircularIndeterminate />
+        ) : (
+          <Button
+            disabled={status === 'WAITING'}
+            variant="contained"
+            onClick={addOrUpdateUser}
+          >
+            {status === 'FAILED' ? 'SEND FOR FAILED LIST' : status}
+          </Button>
+        )}
+      </SpaceBoxComponent>
+    </div>
+  );
+};
+
+const ListSection = (props) => {
+  const { users: items, setOpen, identifyUser } = props;
+  const editHandler = (index) => {
+    identifyUser(index);
+    setOpen(true);
+  };
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'flex-start',
+        gap: '1rem',
+        flexWrap: 'wrap'
+      }}
+    >
+      {items.map((item) => (
+        <CardComponent
+          mainHeader={item.name}
+          dis={`Stocks - ${item.stocks}`}
+          editHandler={editHandler}
+          key={item.id}
+          {...item}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default StationList;

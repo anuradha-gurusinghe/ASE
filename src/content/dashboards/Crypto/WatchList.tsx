@@ -31,6 +31,8 @@ function WatchList() {
     setTab(newValue);
   };
 
+  return <div></div>;
+
   return (
     <>
       <Box

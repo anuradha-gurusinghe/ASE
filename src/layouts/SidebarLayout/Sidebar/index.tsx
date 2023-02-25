@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import Scrollbar from 'src/components/Scrollbar';
 import { SidebarContext } from 'src/contexts/SidebarContext';
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone';
@@ -18,6 +18,7 @@ import {
 
 import SidebarMenu from './SidebarMenu';
 import Logo from 'src/components/LogoSign';
+import { useNavigate, useRoutes } from 'react-router';
 
 const SidebarWrapper = styled(Box)(
   ({ theme }) => `
@@ -35,11 +36,26 @@ function Sidebar() {
   const { sidebarToggle, toggleSidebar } = useContext(SidebarContext);
   const closeSidebar = () => toggleSidebar();
   const theme = useTheme();
+  const nav = useNavigate();
+
+  useEffect(() => {
+    const handleBackButton = (event) => {
+      event.preventDefault();
+    };
+
+    window.history.pushState(null, '', window.location.pathname);
+    window.addEventListener('popstate', handleBackButton);
+
+    return () => {
+      window.removeEventListener('popstate', handleBackButton);
+    };
+  }, []);
 
   const logout = () => {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = '/sign-in';
+    nav('/sign-in', { replace: false });
+    // window.location.href = '/sign-in';
   };
 
   return (

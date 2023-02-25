@@ -82,7 +82,7 @@ function Hero() {
         <Grid item md={10} lg={8} mx="auto">
           <LabelWrapper color="success">Version 2.0.0</LabelWrapper>
           <TypographyH1 sx={{ mb: 2 }} variant="h1">
-            Tokyo Free White React Typescript Admin Dashboard
+            FuelIn Admin Panel
           </TypographyH1>
           <TypographyH2
             sx={{ lineHeight: 1.5, pb: 4 }}
@@ -142,10 +142,6 @@ function Hero() {
                 <Box sx={{ pb: 2 }}>
                   <b>Built with Typescript</b>
                 </Box>
-                <Typography component="span" variant="subtitle2">
-                  Tokyo Free White features a modern technology stack and is
-                  built with React + Typescript.
-                </Typography>
               </Typography>
             </Grid>
           </Grid>

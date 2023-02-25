@@ -15,7 +15,7 @@ const SidebarLayout: FC<SidebarLayoutProps> = () => {
 
   return (
     <>
-      <Auth>
+      <div>
         <Box
           sx={{
             flex: 1,
@@ -62,7 +62,7 @@ const SidebarLayout: FC<SidebarLayoutProps> = () => {
             </Box>
           </Box>
         </Box>
-      </Auth>
+      </div>
     </>
   );
 };

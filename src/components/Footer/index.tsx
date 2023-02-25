@@ -16,11 +16,7 @@ function Footer() {
         textAlign={{ xs: 'center', md: 'left' }}
         justifyContent="space-between"
       >
-        <Box>
-          <Typography variant="subtitle1">
-            &copy; 2023 - FanBudget App Admin Dashboard
-          </Typography>
-        </Box>
+        <Box></Box>
         <Typography
           sx={{
             pt: { xs: 2, md: 0 }
@@ -33,7 +29,7 @@ function Footer() {
             target="_blank"
             rel="noopener noreferrer"
           >
-           efitosolutions.com
+            efitosolutions.com
           </Link>
         </Typography>
       </Box>

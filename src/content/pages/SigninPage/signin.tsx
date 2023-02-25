@@ -10,8 +10,11 @@ import {
   InputAdornment,
   TextField,
   Alert,
-  Input
+  Input,
+  CircularProgress
 } from '@mui/material';
+import InputComponent from 'src/components/InputComponent';
+
 import { Helmet } from 'react-helmet-async';
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import * as Yup from 'yup';
@@ -21,6 +24,7 @@ import { useEffect, useState } from 'react';
 import { AuthService, UserLoginData } from 'src/services/AuthService';
 import { Label } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { auth, provider, signInWithPopup } from 'src/firebase/firebase';
 
 const MainContent = styled(Box)(
   ({ theme }) => `
@@ -47,57 +51,37 @@ const ButtonSearch = styled(Button)(
 );
 
 function Signin() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>();
-  let navigate = useNavigate();
-  const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
-    enableReinitialize: true,
+  //
+  const [user, setUser] = useState<any>('');
 
-    initialValues: {
-      email: '',
-      password: ''
-    },
-    validationSchema: Yup.object({
-      email: Yup.string()
-        .required('Please Enter Your Email')
-        .email('Email is invalid'),
-      password: Yup.string().required('Please Enter Your Password')
-    }),
-    onSubmit: (values) => {
-      console.log('Signing in');
-      const loginData = {
-        ...values,
-        medium: 'EMAIL'
-      };
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUser(user);
+      }
+    });
+  }, [user]);
 
-      logInUser(loginData);
-    }
-  });
-
-  const logInUser = async (values: UserLoginData) => {
+  const handleAuth = () => {
     setIsLoading(true);
 
-    try {
-      const response = await AuthService.userLogin(values);
-      setIsLoading(false);
-      if (response.success && response.data.role === 'SUPER_ADMIN') {
-        navigate('/dashboards');
-        console.log('sucess!!!!!!!!!!!');
-      } else if (!response.success) {
-        if (typeof response.error == 'string') {
-          setError(response.error);
-        } else {
-          setError('Connection Error!');
-        }
-      } else {
-        setError('Not Authorized');
+    setTimeout(() => {
+      if (email !== 'admin@gmail.com' || pasword !== 'admin@1234') {
+        setError('Invalid email or password');
+        setIsLoading(false);
+        return;
       }
-    } catch (error) {
+      navigate('/management/all-users');
       setIsLoading(false);
-      setError('Connection Error!');
-    }
+    }, 3000);
   };
+  //
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [pasword, setPassword] = useState('');
+  const [error, setError] = useState<string | undefined>();
+  let navigate = useNavigate();
+
   useEffect(() => {
     console.log(error);
   }, [error]);
@@ -111,15 +95,7 @@ function Signin() {
           <Box textAlign="center">
             <img alt="404" height={180} src="/static/images/status/theme.svg" />
             <Typography variant="h2" sx={{ my: 2 }}>
-              The Budgetee Application- ADMIN Panel
-            </Typography>
-            <Typography
-              variant="h4"
-              color="text.secondary"
-              fontWeight="normal"
-              sx={{ mb: 4 }}
-            >
-              Just handle your Budget simply!
+              FuelIn Admin Application
             </Typography>
           </Box>
           <Container maxWidth="sm">
@@ -127,50 +103,26 @@ function Signin() {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  validation.handleSubmit();
                   return false;
                 }}
               >
+                <InputComponent
+                  label="Email"
+                  value={email}
+                  setValue={setEmail}
+                />
+                <InputComponent
+                  type="password"
+                  label="Password"
+                  value={pasword}
+                  setValue={setPassword}
+                />
+
                 {error ? <Alert color="error">{error}</Alert> : null}
-                <FormControl variant="outlined" fullWidth>
-                  <div>
-                    <p className="form-label">{'Email'}</p>
-                    <Input
-                      name="email"
-                      className="form-control"
-                      placeholder={'Enter email'}
-                      type="email"
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                      value={validation.values.email || ''}
-                    />
-                    {validation.touched.email && validation.errors.email ? (
-                      <p className="text-danger">{validation.errors.email}</p>
-                    ) : null}
-                  </div>
-                </FormControl>
-                <FormControl variant="outlined" fullWidth>
-                  <div>
-                    <p className="form-label">{'Password'}</p>
-                    <Input
-                      name="password"
-                      value={validation.values.password || ''}
-                      type="password"
-                      placeholder={'Enter Password'}
-                      onChange={validation.handleChange}
-                      onBlur={validation.handleBlur}
-                    />
-                    {validation.touched.password &&
-                    validation.errors.password ? (
-                      <p style={{ color: 'red' }}>
-                        {validation.errors.password}
-                      </p>
-                    ) : null}
-                  </div>
-                </FormControl>
+
                 <Divider sx={{ my: 4 }}></Divider>
-                <Button type="submit" variant="outlined">
-                  Login
+                <Button onClick={handleAuth} type="submit" variant="outlined">
+                  {isLoading ? <CircularProgress></CircularProgress> : 'Login'}
                 </Button>
               </form>
             </Card>

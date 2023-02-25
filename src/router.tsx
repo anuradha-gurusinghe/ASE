@@ -88,6 +88,7 @@ import AllCahapters from './content/applications/Chapters/AllChapters/index';
 import AllChapterGroups from './content/applications/Chapters/ChapterGroups';
 import AllCategories from './content/applications/Categories';
 import AllIcons from './content/applications/Icons';
+import ApplicationsTransactions from 'src/content/applications/Transactions';
 
 const routes: RouteObject[] = [
   {
@@ -181,12 +182,20 @@ const routes: RouteObject[] = [
         element: <AllUsers />
       },
       {
-        path: 'all-chapters',
-        element: <AllCahapters />
+        path: 'all-test-users',
+        element: <AllTestUsers />
       },
       {
-        path: 'all-category',
-        element: <AllCategories />
+        path: 'all-chapters',
+        element: <AllChapterGroups />
+      },
+      {
+        path: 'fuel-distribute',
+        element: <ApplicationsTransactions />
+      },
+      {
+        path: 'vehicles',
+        element: <Messenger />
       },
       {
         path: 'all-chapter-groups',

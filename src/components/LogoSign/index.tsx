@@ -48,28 +48,8 @@ function Logo() {
   const theme = useTheme();
 
   return (
-    <TooltipWrapper
-      title="Fab Budget App Admin Dashboard."
-      arrow
-    >
-      <LogoWrapper to="/overview">
-        <Badge
-          sx={{
-            '.MuiBadge-badge': {
-              fontSize: theme.typography.pxToRem(11),
-              right: -2,
-              top: 8
-            }
-          }}
-          overlap="circular"
-          color="success"
-          badgeContent="1.0"
-        >
-          <LogoSignWrapper>
-            <img src="/static/images/logo/fan_budget.png" alt="Fan Budget" width={50}/>
-          </LogoSignWrapper>
-        </Badge>
-      </LogoWrapper>
+    <TooltipWrapper title="Fab Budget App Admin Dashboard." arrow>
+      <LogoWrapper to="/overview"></LogoWrapper>
     </TooltipWrapper>
   );
 }
