@@ -195,7 +195,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/management/all-users"
+                  to="/management/all-stations"
                   startIcon={<TableChartTwoToneIcon />}
                 >
                   {'All stations'.toLocaleUpperCase()}
@@ -208,7 +208,7 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/management/all-test-users"
+                  to="/management/all-requests"
                   startIcon={<TableChartTwoToneIcon />}
                 >
                   {`All Requests`.toLocaleUpperCase()}
@@ -219,10 +219,21 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/management/all-chapters"
+                  to="/management/failed-tokens"
                   startIcon={<TableChartTwoToneIcon />}
                 >
                   FAILED TOKENS
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/management/restocked-tokens"
+                  startIcon={<TableChartTwoToneIcon />}
+                >
+                  RE-STOCKS TOKENS
                 </Button>
               </ListItem>
               <ListItem component="div">

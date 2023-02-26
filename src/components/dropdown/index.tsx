@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 export default function DropDown(props) {
-  const { select, setSelect, items = [], label } = props;
+  const { select, setSelect, items = [], label, disabled = false } = props;
 
   const handleChange = (event) => {
     setSelect(event.target.value);
@@ -22,6 +22,7 @@ export default function DropDown(props) {
           value={select}
           label={label}
           onChange={handleChange}
+          disabled={disabled}
         >
           {items.length > 0 &&
             items.map((item, index) => (

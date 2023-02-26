@@ -14,11 +14,12 @@ import CardComponent from '../../../../components/card';
 import CircularIndeterminate from '../../../../components/progress';
 import DropDown from 'src/components/dropdown';
 import FilterComponent from 'src/components/filter';
+import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const requestStatus = [
   'WAITING',
   'APPROVED',
-  'FAILED',
   'CANCELED',
   'ASK_FOR_TIME_CHANGE'
 ];
@@ -74,8 +75,16 @@ const StationList = () => {
     setIsLoading(false);
     const { status, data } = response;
     if (status) {
-      setRequests(data);
-      setAllUsers(data);
+      for (const d of data) {
+        if (
+          (d.reqStatus === 'APPROVED' && new Date(d.date) < new Date()) ||
+          d.reqStatus === 'RE-STOCKS'
+        ) {
+          continue;
+        }
+        setRequests((prev) => [...prev, d]);
+        setAllUsers((prev) => [...prev, d]);
+      }
     }
   };
 
@@ -148,9 +157,9 @@ const CreateAndUpdateSection = (props) => {
 
   useEffect(() => {
     if (fuStation) {
-      const { name, stocks, district, date, time } = fuStation;
+      const { name, stocks, reqStatus, date, time } = fuStation;
       setTitle(name);
-      setStatus(district);
+      setStatus(reqStatus);
       setStocks(stocks);
       setDate(date);
       setTime(time);
@@ -162,7 +171,7 @@ const CreateAndUpdateSection = (props) => {
     const doc = {
       name,
       stocks,
-      status,
+      reqStatus: status,
       date,
       time
     };
@@ -173,6 +182,18 @@ const CreateAndUpdateSection = (props) => {
     } else {
       await updateData('requests', fuStation.id, doc);
     }
+
+    // send email
+    // send the email
+    try {
+      const response = await axios.post(
+        'http://localhost:4200/api/send-email',
+        { email: 'user.email', status, user: '' }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+
     setIsLoading(false);
     setDataUpdateToggle(!dataUpdateToggle);
     setOpen(false);

@@ -53,38 +53,32 @@ const ButtonSearch = styled(Button)(
 function Signin() {
   //
   const [user, setUser] = useState<any>('');
-
-  useEffect(() => {
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        setUser(user);
-      }
-    });
-  }, [user]);
-
-  const handleAuth = () => {
-    setIsLoading(true);
-
-    setTimeout(() => {
-      if (email !== 'admin@gmail.com' || pasword !== 'admin@1234') {
-        setError('Invalid email or password');
-        setIsLoading(false);
-        return;
-      }
-      navigate('/management/all-users');
-      setIsLoading(false);
-    }, 3000);
-  };
-  //
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<any>('');
   const [email, setEmail] = useState('');
   const [pasword, setPassword] = useState('');
   const [error, setError] = useState<string | undefined>();
   let navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(error);
-  }, [error]);
+  const handleAuth = async () => {
+    setIsLoading(true);
+
+    setTimeout(async () => {
+      if (email !== 'admin@gmail.com' || pasword !== 'admin@1234') {
+        setError('Invalid email or password');
+        setIsLoading(false);
+        return;
+      }
+
+      localStorage.setItem(
+        'token',
+        'JWT abb@aan122annamszahdgowpwm384@@msmmsyfiofnfnfnskksksn,,,wwiprl##jka'
+      );
+      navigate('/management/all-stations');
+      setIsLoading(false);
+    }, 3000);
+  };
+  //
+
   return (
     <>
       <Helmet>

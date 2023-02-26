@@ -16,6 +16,8 @@ const FilterComponent: React.FC<Props> = (props) => {
   const { arr, value, setValue, label } = props;
 
   const handleChange = (event: SelectChangeEvent) => {
+    console.log(event.target.value);
+
     setValue(event.target.value as string);
   };
 

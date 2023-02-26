@@ -45,6 +45,9 @@ const UserProfile = Loader(
 const UserSettings = Loader(
   lazy(() => import('src/content/applications/Users/settings'))
 );
+const Restocked = Loader(
+  lazy(() => import('src/content/applications/Chapters/re-stocks'))
+);
 
 // Components
 
@@ -97,7 +100,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '/',
-        element: <Crypto />
+        element: <AllUsers />
       },
       {
         path: 'analytics',
@@ -178,16 +181,20 @@ const routes: RouteObject[] = [
         element: <Navigate to="" replace />
       },
       {
-        path: 'all-users',
+        path: 'all-stations',
         element: <AllUsers />
       },
       {
-        path: 'all-test-users',
+        path: 'all-requests',
         element: <AllTestUsers />
       },
       {
-        path: 'all-chapters',
+        path: 'failed-tokens',
         element: <AllChapterGroups />
+      },
+      {
+        path: 'restocked-tokens',
+        element: <Restocked />
       },
       {
         path: 'fuel-distribute',
