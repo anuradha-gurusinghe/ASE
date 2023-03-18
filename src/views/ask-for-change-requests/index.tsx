@@ -141,7 +141,7 @@ const CreateAndUpdateSection = (props) => {
 
   const [name, setName] = useState('');
   const [date, setDate] = useState('');
-  const [userId, setUserId] = useState('');
+  const [email, setEmail] = useState('');
   const [status, setStatus] = useState('');
   const [stocks, setStocks] = useState('');
   const [time, setTime] = useState('');
@@ -151,14 +151,14 @@ const CreateAndUpdateSection = (props) => {
 
   useEffect(() => {
     if (fuStation) {
-      const { station, fualAmount, reqStatus, date, time } = fuStation;
-      console.log(fuStation);
+      const { station, email, fualAmount, reqStatus, date, time } = fuStation;
 
       setName(station);
       setStatus(reqStatus);
       setStocks(fualAmount);
       setDate(date);
       setTime(time);
+      setEmail(email);
     }
   }, [fuStation]);
 
@@ -179,12 +179,11 @@ const CreateAndUpdateSection = (props) => {
       await updateData('requests', fuStation.id, doc);
     }
 
-    // send email
     // send the email
     try {
       const response = await axios.post(
         'http://localhost:4200/api/send-email',
-        { email: 'user.email', status, user: '' }
+        { email, status: doc.reqStatus, date, station: name }
       );
     } catch (error) {
       console.error(error);
