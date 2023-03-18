@@ -4,14 +4,14 @@ import {
   addData,
   updateData,
   deleteData
-} from '../../../../http/http-requests';
+} from 'src/http/http-requests';
 
 import Button from '@mui/material/Button';
-import InputComponent from '../../../../components/InputComponent';
-import SpaceBoxComponent from '../../../../components/SpaceBoxComponent';
-import ModalComponent from '../../../../components/Modal';
-import CardComponent from '../../../../components/card';
-import CircularIndeterminate from '../../../../components/progress';
+import InputComponent from 'src/components/InputComponent';
+import SpaceBoxComponent from 'src/components/SpaceBoxComponent';
+import ModalComponent from 'src/components/Modal';
+import CardComponent from 'src/components/card';
+import CircularIndeterminate from 'src/components/progress';
 import DropDown from 'src/components/dropdown';
 import FilterComponent from 'src/components/filter';
 import axios from 'axios';
@@ -78,9 +78,7 @@ const ApprovedRequests = () => {
     const { status, data } = response;
     if (status) {
       for (const d of data) {
-        if (
-          (d.reqStatus !== 'APPROVED') 
-        ) {
+        if (d.reqStatus !== 'ASK_FOR_TIME_CHANGE') {
           continue;
         }
         setRequests((prev) => [...prev, d]);

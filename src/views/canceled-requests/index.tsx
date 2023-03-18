@@ -4,14 +4,14 @@ import {
   addData,
   updateData,
   deleteData
-} from '../../../../http/http-requests';
+} from '../../http/http-requests';
 
 import Button from '@mui/material/Button';
-import InputComponent from '../../../../components/InputComponent';
-import SpaceBoxComponent from '../../../../components/SpaceBoxComponent';
-import ModalComponent from '../../../../components/Modal';
-import CardComponent from '../../../../components/card';
-import CircularIndeterminate from '../../../../components/progress';
+import InputComponent from '../../components/InputComponent';
+import SpaceBoxComponent from '../../components/SpaceBoxComponent';
+import ModalComponent from '../../components/Modal';
+import CardComponent from '../../components/card';
+import CircularIndeterminate from '../../components/progress';
 import DropDown from 'src/components/dropdown';
 import FilterComponent from 'src/components/filter';
 import axios from 'axios';

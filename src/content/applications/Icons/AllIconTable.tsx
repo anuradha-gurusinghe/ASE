@@ -22,7 +22,6 @@ import {
   TablePagination,
   useTheme
 } from '@mui/material';
-import BulkActions from '../views/distribution/BulkActions';
 import numeral from 'numeral';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
@@ -254,7 +253,6 @@ const AllIconTable: FC<Props> = ({
       <Card>
         {selectedBulkActions && (
           <Box flex={1} p={2}>
-            <BulkActions />
           </Box>
         )}
         {!selectedBulkActions && (

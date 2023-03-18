@@ -1,36 +1,21 @@
 import { useEffect, useState } from 'react';
-import {
-  getAllData,
-  addData,
-  updateData,
-  deleteData
-} from '../../../../http/http-requests';
+import { getAllData } from 'src/http/http-requests';
 
-import Button from '@mui/material/Button';
-import InputComponent from '../../../../components/InputComponent';
-import SpaceBoxComponent from '../../../../components/SpaceBoxComponent';
-import ModalComponent from '../../../../components/Modal';
-import CardComponent from '../../../../components/card';
-import CircularIndeterminate from '../../../../components/progress';
+import InputComponent from 'src/components/InputComponent';
+import ModalComponent from 'src/components/Modal';
+import CardComponent from 'src/components/card';
+import CircularIndeterminate from 'src/components/progress';
 import DropDown from 'src/components/dropdown';
 import FilterComponent from 'src/components/filter';
-import axios from 'axios';
-import { useNavigate } from 'react-router';
 
-const requestStatus = [
-  'PENDING',
-  'APPROVED',
-  'CANCELED',
-  'ASK_FOR_TIME_CHANGE'
-];
-
-const ApprovedRequests = () => {
+const RestockesTokans = () => {
   const [requests, setRequests] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [stations, setStations] = useState([]);
   const [station, setStation] = useState('');
   const [user, setUser] = useState('');
   const [search, setSearch] = useState('');
+  const [amount, setAmount] = useState<any>('');
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [dataUpdateToggle, setDataUpdateToggle] = useState(false);
@@ -41,7 +26,7 @@ const ApprovedRequests = () => {
   };
 
   useEffect(() => {
-    getRequestData();
+    getUserData();
     getStationData();
   }, [dataUpdateToggle]);
 
@@ -51,7 +36,8 @@ const ApprovedRequests = () => {
         setRequests(allUsers);
         return;
       }
-      const allReqs = requests;
+      const allReqs = allUsers;
+      const allStation = [...stations];
       const filteredReqs = allReqs.filter((req) => req.station === station);
 
       setRequests((_: any) => filteredReqs);
@@ -65,25 +51,26 @@ const ApprovedRequests = () => {
       );
       setRequests(() => [...searchedUsers]);
     } else {
-      setRequests(() => [...allUsers]);
+      setRequests(allUsers);
     }
   }, [search]);
 
-  const getRequestData = async () => {
+  const getUserData = async () => {
     setIsLoading(true);
-    setRequests([]);
-    setAllUsers([]);
     const response = await getAllData('requests');
     setIsLoading(false);
     const { status, data } = response;
     if (status) {
+      let am = 0;
       for (const d of data) {
-        if (d.reqStatus !== 'ASK_FOR_TIME_CHANGE') {
-          continue;
+        if (d.reqStatus === 'RE-STOCKS') {
+          setRequests((prev) => [...prev, d]);
+          setAllUsers((prev) => [...prev, d]);
+          am += +d.units;
         }
-        setRequests((prev) => [...prev, d]);
-        setAllUsers((prev) => [...prev, d]);
       }
+
+      setAmount(am);
     }
   };
 
@@ -110,6 +97,7 @@ const ApprovedRequests = () => {
         setValue={setStation}
         label="Select Fuel Station"
       />
+      <h1> All Re Stocked Amount - {amount} </h1>
       <ModalComponent setItem={setUser} open={open} setOpen={setOpen} name="">
         <CreateAndUpdateSection
           dataUpdateToggle={dataUpdateToggle}
@@ -117,6 +105,7 @@ const ApprovedRequests = () => {
           user={user}
           setOpen={setOpen}
           setUser={setUser}
+          stations={stations}
         />
       </ModalComponent>
 
@@ -131,78 +120,38 @@ const ApprovedRequests = () => {
 };
 
 const CreateAndUpdateSection = (props) => {
-  const {
-    setUser,
-    setOpen,
-    user: fuStation,
-    dataUpdateToggle,
-    setDataUpdateToggle
-  } = props;
+  const { user: fuReqs, stations } = props;
 
-  const [name, setName] = useState('');
+  const [name, setTitle] = useState('');
   const [date, setDate] = useState('');
-  const [userId, setUserId] = useState('');
   const [status, setStatus] = useState('');
   const [stocks, setStocks] = useState('');
   const [time, setTime] = useState('');
-  const [pic, setUrl] = useState('');
-  const [isNeedChange, setNeedChange] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [unit, setUnit] = useState('');
 
   useEffect(() => {
-    if (fuStation) {
-      const { station, fualAmount, reqStatus, date, time } = fuStation;
-      console.log(fuStation);
-
-      setName(station);
+    if (fuReqs) {
+      const { station, stocks, reqStatus, date, time, units } = fuReqs;
+      setTitle(station);
       setStatus(reqStatus);
-      setStocks(fualAmount);
+      setStocks(stocks);
       setDate(date);
       setTime(time);
+      setUnit(units);
+
+      const allSt = [...stations];
+      const findSt = allSt.find((s) => s.name === station);
     }
-  }, [fuStation]);
-
-  const addOrUpdateUser = async () => {
-    setIsLoading(true);
-    const doc = {
-      name,
-      stocks,
-      reqStatus: status,
-      date,
-      time
-    };
-    Object.keys(doc).forEach((k) => doc[k] == null && delete doc[k]);
-
-    if (!fuStation) {
-      await addData('requests', doc);
-    } else {
-      await updateData('requests', fuStation.id, doc);
-    }
-
-    // send email
-    // send the email
-    try {
-      const response = await axios.post(
-        'http://localhost:4200/api/send-email',
-        { email: 'user.email', status, user: '' }
-      );
-    } catch (error) {
-      console.error(error);
-    }
-
-    setIsLoading(false);
-    setDataUpdateToggle(!dataUpdateToggle);
-    setOpen(false);
-    setUser(null);
-  };
+  }, [fuReqs]);
 
   return (
     <div>
       <DropDown
         label="Request status"
-        select={status}
+        select={'RE-STOCKS'}
         setSelect={setStatus}
-        items={requestStatus}
+        items={['RE-STOCKS']}
+        disabled={true}
       />
 
       <InputComponent
@@ -218,32 +167,19 @@ const CreateAndUpdateSection = (props) => {
         disabled={status === 'ASK_FOR_TIME_CHANGE' ? false : true}
       />
       <InputComponent
-        label="Station Name"
+        label="Station Name!"
         value={name}
-        setValue={setName}
+        setValue={setTitle}
         disabled={true}
       />
 
       <InputComponent
-        label="Available Stocks"
-        value={stocks}
-        setValue={setStocks}
+        type="number"
+        label="Fuel units"
+        value={unit}
+        setValue={setUnit}
         disabled={true}
       />
-
-      <SpaceBoxComponent>
-        {isLoading ? (
-          <CircularIndeterminate />
-        ) : (
-          <Button
-            disabled={status === 'PENDING'}
-            variant="contained"
-            onClick={addOrUpdateUser}
-          >
-            {status === 'FAILED' ? 'SEND FOR FAILED LIST' : status}
-          </Button>
-        )}
-      </SpaceBoxComponent>
     </div>
   );
 };
@@ -254,8 +190,6 @@ const ListSection = (props) => {
     identifyUser(index);
     setOpen(true);
   };
-
-  console.log(items);
 
   return (
     <div
@@ -269,10 +203,8 @@ const ListSection = (props) => {
     >
       {items.map((item) => (
         <CardComponent
-          mainHeader=""
-          status={`${item.reqStatus}`}
-          station={`${item.station}`}
-          date={`${item.date}`}
+          mainHeader={item.name}
+          dis={`Stocks - ${item.stocks}`}
           editHandler={editHandler}
           key={item.id}
           {...item}
@@ -282,4 +214,4 @@ const ListSection = (props) => {
   );
 };
 
-export default ApprovedRequests;
+export default RestockesTokans;

@@ -28,41 +28,41 @@ const Crypto = Loader(lazy(() => import('src/content/dashboards/Crypto')));
 // Applications
 
 const Messenger = Loader(
-  lazy(() => import('src/content/applications/views/vehicles'))
+  lazy(() => import('src/views/vehicles'))
 );
 const AllUsers = Loader(
-  lazy(() => import('src/content/applications/views/all-stations'))
+  lazy(() => import('src/views/all-stations'))
 );
 const AllTestUsers = Loader(
-  lazy(() => import('src/content/applications/views/all-requests'))
+  lazy(() => import('src/views/all-requests'))
 );
 const Transactions = Loader(
-  lazy(() => import('src/content/applications/views/distribution'))
+  lazy(() => import('src/views/distribution'))
 );
 const UserProfile = Loader(
-  lazy(() => import('src/content/applications/views/profile'))
+  lazy(() => import('src/views/profile'))
 );
 const UserSettings = Loader(
-  lazy(() => import('src/content/applications/views/settings'))
+  lazy(() => import('src/views/settings'))
 );
 const Restocked = Loader(
-  lazy(() => import('src/content/applications/views/re-stocks'))
+  lazy(() => import('src/views/re-stocks'))
 );
 
 const ApprovedRequests = Loader(
-  lazy(() => import('src/content/applications/views/approved-requests'))
+  lazy(() => import('src/views/approved-requests'))
 );
 
 const PendingRequests = Loader(
-  lazy(() => import('src/content/applications/views/pending-requests'))
+  lazy(() => import('src/views/pending-requests'))
 );
 
 const CanceledRequests = Loader(
-  lazy(() => import('src/content/applications/views/canceled-requests '))
+  lazy(() => import('src/views/canceled-requests'))
 );
 
 const AskForChangeRequests = Loader(
-  lazy(() => import('src/content/applications/views/ask-for-change-requests'))
+  lazy(() => import('src/views/ask-for-change-requests'))
 );
 
 // Components
@@ -103,11 +103,9 @@ const StatusComingSoon = Loader(
 const StatusMaintenance = Loader(
   lazy(() => import('src/content/pages/Status/Maintenance'))
 );
-import AllCahapters from './content/applications/Chapters/AllChapters/index';
-import AllChapterGroups from './content/applications/views/failed-tokens';
-import AllCategories from './content/applications/Categories';
+import AllChapterGroups from './views/failed-tokens';
 import AllIcons from './content/applications/Icons';
-import ApplicationsTransactions from 'src/content/applications/views/distribution';
+import ApplicationsTransactions from 'src/views/distribution';
 
 const routes: RouteObject[] = [
   {

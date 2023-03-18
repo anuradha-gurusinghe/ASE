@@ -123,12 +123,18 @@ const CreateAndUpdateSection = (props) => {
 
   useEffect(() => {
     if (vehicle) {
-      const { chassiNumber, id, ownerID, status, vehicleNumber, vehicleType } =
-        vehicle;
+      const {
+        chassiNumber,
+        id,
+        ownerEmail,
+        reqStatus,
+        vehicleNumber,
+        vehicleType
+      } = vehicle;
       setVehicleNumber(vehicleNumber);
       setVehicleType(vehicleType);
       setChassiNumber(chassiNumber);
-      setOwnerId(ownerID);
+      setOwnerId(ownerEmail);
       setStatus(status);
     }
   }, [vehicle]);
@@ -152,13 +158,6 @@ const CreateAndUpdateSection = (props) => {
         label="Owner Id"
         value={ownerId}
         setValue={setOwnerId}
-        disabled={true}
-      />
-
-      <InputComponent
-        label="Status"
-        value={status}
-        setValue={setStatus}
         disabled={true}
       />
 
