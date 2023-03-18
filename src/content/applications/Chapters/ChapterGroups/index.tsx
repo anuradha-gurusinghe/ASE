@@ -111,12 +111,7 @@ const FailedTokans = () => {
         setValue={setStation}
         label="Select Fuel Station"
       />
-      <ModalComponent
-        setItem={setUser}
-        open={open}
-        setOpen={setOpen}
-        name="Add New Station"
-      >
+      <ModalComponent setItem={setUser} open={open} setOpen={setOpen} name="">
         <CreateAndUpdateSection
           dataUpdateToggle={dataUpdateToggle}
           setDataUpdateToggle={setDataUpdateToggle}
@@ -235,7 +230,7 @@ const CreateAndUpdateSection = (props) => {
         disabled={status === 'ASK_FOR_TIME_CHANGE' ? false : true}
       />
       <InputComponent
-        label="Station Name"
+        label="Station Name!"
         value={name}
         setValue={setTitle}
         disabled={true}
@@ -293,13 +288,3 @@ const ListSection = (props) => {
 };
 
 export default FailedTokans;
-
-const WelcomeEmail = ({ firstName = 'thilina' }) => ({
-  subject: `👋 ${firstName}`,
-  body: (
-    <div>
-      <p>Hello {firstName}!</p>
-      <p>Hope you'll enjoy the package!</p>
-    </div>
-  )
-});

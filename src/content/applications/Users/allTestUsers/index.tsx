@@ -111,12 +111,7 @@ const StationList = () => {
         setValue={setStation}
         label="Select Fuel Station"
       />
-      <ModalComponent
-        setItem={setUser}
-        open={open}
-        setOpen={setOpen}
-        name="Add New Station"
-      >
+      <ModalComponent setItem={setUser} open={open} setOpen={setOpen} name="">
         <CreateAndUpdateSection
           dataUpdateToggle={dataUpdateToggle}
           setDataUpdateToggle={setDataUpdateToggle}
@@ -145,7 +140,7 @@ const CreateAndUpdateSection = (props) => {
     setDataUpdateToggle
   } = props;
 
-  const [name, setTitle] = useState('');
+  const [name, setName] = useState('');
   const [date, setDate] = useState('');
   const [userId, setUserId] = useState('');
   const [status, setStatus] = useState('');
@@ -157,8 +152,8 @@ const CreateAndUpdateSection = (props) => {
 
   useEffect(() => {
     if (fuStation) {
-      const { name, stocks, reqStatus, date, time } = fuStation;
-      setTitle(name);
+      const { station, stocks, reqStatus, date, time } = fuStation;
+      setName(station);
       setStatus(reqStatus);
       setStocks(stocks);
       setDate(date);
@@ -200,17 +195,6 @@ const CreateAndUpdateSection = (props) => {
     setUser(null);
   };
 
-  const deleteUser = async () => {
-    if (fuStation) {
-      setIsLoading(true);
-      await deleteData('requests', fuStation.id);
-      setIsLoading(false);
-      setDataUpdateToggle(!dataUpdateToggle);
-    }
-    setOpen(false);
-    setUser('');
-  };
-
   return (
     <div>
       <DropDown
@@ -235,7 +219,7 @@ const CreateAndUpdateSection = (props) => {
       <InputComponent
         label="Station Name"
         value={name}
-        setValue={setTitle}
+        setValue={setName}
         disabled={true}
       />
 

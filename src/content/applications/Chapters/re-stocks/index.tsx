@@ -167,7 +167,7 @@ const CreateAndUpdateSection = (props) => {
         disabled={status === 'ASK_FOR_TIME_CHANGE' ? false : true}
       />
       <InputComponent
-        label="Station Name"
+        label="Station Name!"
         value={name}
         setValue={setTitle}
         disabled={true}

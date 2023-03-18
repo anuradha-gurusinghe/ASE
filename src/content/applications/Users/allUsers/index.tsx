@@ -195,7 +195,7 @@ const CreateAndUpdateSection = (props) => {
         {!isLoading && fuStation && (
           <Button variant="contained" color="error" onClick={deleteUser}>
             {' '}
-            Delete User{' '}
+            Delete Data{' '}
           </Button>
         )}
         {isLoading ? (
