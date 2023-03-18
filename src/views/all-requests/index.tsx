@@ -78,10 +78,7 @@ const StationList = () => {
     const { status, data } = response;
     if (status) {
       for (const d of data) {
-        if (
-          (d.reqStatus === 'APPROVED' && new Date(d.date) < new Date()) ||
-          d.reqStatus === 'RE-STOCKS'
-        ) {
+        if (d.reqStatus === 'RE-STOCKS') {
           continue;
         }
         setRequests((prev) => [...prev, d]);
