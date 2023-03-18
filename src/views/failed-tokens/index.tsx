@@ -193,16 +193,6 @@ const CreateAndUpdateSection = (props) => {
       stocks: +correctSt.stocks + +unit
     });
 
-    // send the email
-    try {
-      const response = await axios.post(
-        'http://localhost:4200/api/send-email',
-        { email: 'user.email', status, user: '' }
-      );
-    } catch (error) {
-      console.error(error);
-    }
-
     setIsLoading(false);
     setDataUpdateToggle(!dataUpdateToggle);
     setOpen(false);

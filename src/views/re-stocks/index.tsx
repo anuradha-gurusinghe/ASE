@@ -64,7 +64,7 @@ const RestockesTokans = () => {
       let am = 0;
       for (const d of data) {
         console.log(d);
-        
+
         if (d.reqStatus === 'RE-STOCKS') {
           setRequests((prev) => [...prev, d]);
           setAllUsers((prev) => [...prev, d]);
