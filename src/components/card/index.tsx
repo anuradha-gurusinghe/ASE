@@ -6,10 +6,14 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 
 export default function CardComponent(props) {
-  const { dis, id, editHandler, pic, mainHeader } = props;
+  const { dis, id, editHandler, pic, mainHeader, station, date, status } =
+    props;
+
+  console.log(status);
 
   return (
     <Card
+      style={{ backgroundColor: status === 'APPROVED' ? '#7FFFD4' : status === "PENDING" ? '#00FFFF'   : status === 'CANCELED' ? '#F08080' : '#D3D3D3' }}
       onClick={() => editHandler(id)}
       sx={{
         display: 'flex',
@@ -29,17 +33,13 @@ export default function CardComponent(props) {
             component="div"
           >
             {dis}
+            {status && <div> {status} </div>}
+            {station && <div> {station} </div>}
+            {date && <div> {date}</div>}
           </Typography>
         </CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}></Box>
       </Box>
-      {/* <CardMedia
-        style={{ flex: 1 }}
-        component="img"
-        sx={{ width: 151 }}
-        image={pic}
-        alt="Live from space album cover"
-      /> */}
     </Card>
   );
 }

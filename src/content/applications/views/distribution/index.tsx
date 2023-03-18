@@ -9,7 +9,7 @@ import Chart from 'react-apexcharts';
 import { Card, Grid, useTheme } from '@mui/material';
 import { ApexOptions } from 'apexcharts';
 
-const StationList = () => {
+const FuelDistribution = () => {
   const theme = useTheme();
 
   const [chartSeries, setChartSeries] = useState([100, 0]);
@@ -221,4 +221,4 @@ const StationList = () => {
   );
 };
 
-export default StationList;
+export default FuelDistribution;

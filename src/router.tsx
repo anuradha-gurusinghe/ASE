@@ -28,25 +28,41 @@ const Crypto = Loader(lazy(() => import('src/content/dashboards/Crypto')));
 // Applications
 
 const Messenger = Loader(
-  lazy(() => import('src/content/applications/Messenger'))
+  lazy(() => import('src/content/applications/views/vehicles'))
 );
 const AllUsers = Loader(
-  lazy(() => import('src/content/applications/Users/allUsers'))
+  lazy(() => import('src/content/applications/views/all-stations'))
 );
 const AllTestUsers = Loader(
-  lazy(() => import('src/content/applications/Users/allTestUsers'))
+  lazy(() => import('src/content/applications/views/all-requests'))
 );
 const Transactions = Loader(
-  lazy(() => import('src/content/applications/Transactions'))
+  lazy(() => import('src/content/applications/views/distribution'))
 );
 const UserProfile = Loader(
-  lazy(() => import('src/content/applications/Users/profile'))
+  lazy(() => import('src/content/applications/views/profile'))
 );
 const UserSettings = Loader(
-  lazy(() => import('src/content/applications/Users/settings'))
+  lazy(() => import('src/content/applications/views/settings'))
 );
 const Restocked = Loader(
-  lazy(() => import('src/content/applications/Chapters/re-stocks'))
+  lazy(() => import('src/content/applications/views/re-stocks'))
+);
+
+const ApprovedRequests = Loader(
+  lazy(() => import('src/content/applications/views/approved-requests'))
+);
+
+const PendingRequests = Loader(
+  lazy(() => import('src/content/applications/views/pending-requests'))
+);
+
+const CanceledRequests = Loader(
+  lazy(() => import('src/content/applications/views/canceled-requests '))
+);
+
+const AskForChangeRequests = Loader(
+  lazy(() => import('src/content/applications/views/ask-for-change-requests'))
 );
 
 // Components
@@ -88,10 +104,10 @@ const StatusMaintenance = Loader(
   lazy(() => import('src/content/pages/Status/Maintenance'))
 );
 import AllCahapters from './content/applications/Chapters/AllChapters/index';
-import AllChapterGroups from './content/applications/Chapters/ChapterGroups';
+import AllChapterGroups from './content/applications/views/failed-tokens';
 import AllCategories from './content/applications/Categories';
 import AllIcons from './content/applications/Icons';
-import ApplicationsTransactions from 'src/content/applications/Transactions';
+import ApplicationsTransactions from 'src/content/applications/views/distribution';
 
 const routes: RouteObject[] = [
   {
@@ -187,6 +203,22 @@ const routes: RouteObject[] = [
       {
         path: 'all-requests',
         element: <AllTestUsers />
+      },
+      {
+        path: 'approved-requests',
+        element: <ApprovedRequests />
+      },
+      {
+        path: 'pending-requests',
+        element: <PendingRequests />
+      },
+      {
+        path: 'canceled-requests',
+        element: <CanceledRequests />
+      },
+      {
+        path: 'ask-for-change-requests',
+        element: <AskForChangeRequests />
       },
       {
         path: 'failed-tokens',

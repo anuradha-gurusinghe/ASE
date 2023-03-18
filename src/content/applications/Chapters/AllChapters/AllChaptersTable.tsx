@@ -1,7 +1,7 @@
 import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 import { Card, Box, CardHeader, FormControl, InputLabel, Select, MenuItem, Divider, TableContainer, Table, TableHead, TableRow, TableCell, Checkbox, TableBody, Typography, Tooltip, IconButton, TablePagination, useTheme } from "@mui/material";
-import BulkActions from "../../Transactions/BulkActions";
+import BulkActions from "../../views/distribution/BulkActions";
 import numeral from 'numeral';;
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';

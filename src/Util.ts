@@ -1,4 +1,4 @@
-import { environment } from './environment/environment';
+import { environment } from './environment/environment.example';
 import axios, { AxiosHeaders } from 'axios';
 
 export class Util {

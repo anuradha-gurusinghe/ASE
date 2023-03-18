@@ -219,6 +219,50 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
+                  to="/management/approved-requests"
+                  startIcon={<TableChartTwoToneIcon />}
+                >
+                  APPROVED REQUESTS
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/management/pending-requests"
+                  startIcon={<TableChartTwoToneIcon />}
+                >
+                  PENDING REQUESTS
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/management/canceled-requests"
+                  startIcon={<TableChartTwoToneIcon />}
+                >
+                  CANCELED REQUESTS
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/management/ask-for-change-requests"
+                  startIcon={<TableChartTwoToneIcon />}
+                >
+                  ASK FOR CHANGED REQUESTS
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
                   to="/management/failed-tokens"
                   startIcon={<TableChartTwoToneIcon />}
                 >

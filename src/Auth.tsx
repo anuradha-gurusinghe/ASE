@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import UserContext from './context/UserContext';
-import { environment } from './environment/environment';
+import { environment } from './environment/environment.example';
 import { RequestState } from './RequestState';
 import { AuthService } from './services/AuthService';
 

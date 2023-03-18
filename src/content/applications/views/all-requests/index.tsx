@@ -18,7 +18,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router';
 
 const requestStatus = [
-  'WAITING',
+  'PENDING',
   'APPROVED',
   'CANCELED',
   'ASK_FOR_TIME_CHANGE'
@@ -41,7 +41,7 @@ const StationList = () => {
   };
 
   useEffect(() => {
-    getUserData();
+    getRequestData();
     getStationData();
   }, [dataUpdateToggle]);
 
@@ -65,12 +65,14 @@ const StationList = () => {
       );
       setRequests(() => [...searchedUsers]);
     } else {
-      setRequests(allUsers);
+      setRequests(() => [...allUsers]);
     }
   }, [search]);
 
-  const getUserData = async () => {
+  const getRequestData = async () => {
     setIsLoading(true);
+    setRequests([]);
+    setAllUsers([]);
     const response = await getAllData('requests');
     setIsLoading(false);
     const { status, data } = response;
@@ -152,10 +154,12 @@ const CreateAndUpdateSection = (props) => {
 
   useEffect(() => {
     if (fuStation) {
-      const { station, stocks, reqStatus, date, time } = fuStation;
+      const { station, fualAmount, reqStatus, date, time } = fuStation;
+      console.log(fuStation);
+
       setName(station);
       setStatus(reqStatus);
-      setStocks(stocks);
+      setStocks(fualAmount);
       setDate(date);
       setTime(time);
     }
@@ -224,7 +228,6 @@ const CreateAndUpdateSection = (props) => {
       />
 
       <InputComponent
-        type="number"
         label="Available Stocks"
         value={stocks}
         setValue={setStocks}
@@ -236,7 +239,7 @@ const CreateAndUpdateSection = (props) => {
           <CircularIndeterminate />
         ) : (
           <Button
-            disabled={status === 'WAITING'}
+            disabled={status === 'PENDING'}
             variant="contained"
             onClick={addOrUpdateUser}
           >
@@ -255,6 +258,9 @@ const ListSection = (props) => {
     setOpen(true);
   };
 
+  console.log(items);
+  
+
   return (
     <div
       style={{
@@ -267,8 +273,10 @@ const ListSection = (props) => {
     >
       {items.map((item) => (
         <CardComponent
-          mainHeader={item.name}
-          dis={`Stocks - ${item.stocks}`}
+          mainHeader=""
+          status={`${item.reqStatus}`}
+          station={`${item.station}`}
+          date={`${item.date}`}
           editHandler={editHandler}
           key={item.id}
           {...item}

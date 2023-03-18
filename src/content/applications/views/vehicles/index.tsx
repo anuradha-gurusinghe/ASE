@@ -168,20 +168,6 @@ const CreateAndUpdateSection = (props) => {
         setValue={setChassiNumber}
         disabled={true}
       />
-
-      {/* <SpaceBoxComponent>
-        {isLoading ? (
-          <CircularIndeterminate />
-        ) : (
-          <Button
-            disabled={status === 'WAITING'}
-            variant="contained"
-            onClick={addOrUpdateUser}
-          >
-            {status === 'FAILED' ? 'SEND FOR FAILED LIST' : status}
-          </Button>
-        )}
-      </SpaceBoxComponent> */}
     </div>
   );
 };

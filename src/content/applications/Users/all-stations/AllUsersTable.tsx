@@ -22,7 +22,7 @@ import {
   TablePagination,
   useTheme
 } from '@mui/material';
-import BulkActions from '../views/distribution/BulkActions';
+import BulkActions from '../../views/distribution/BulkActions';
 import numeral from 'numeral';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
@@ -30,38 +30,22 @@ import UserContext from 'src/context/UserContext';
 import { UserDetails, VerifyStatus } from 'src/models/User';
 import { ManagementServices } from 'src/services/ManagementServices';
 import Swal from 'sweetalert2';
-import { activeStatus } from 'src/models/ChapterGroup';
-import { DeleteTwoTone } from '@mui/icons-material';
-import AllCategories from './index';
-import { IconDetails } from 'src/models/Icon';
 // const [user, setUser] = useContext(UserContext);
-interface AllCategoryTableProps {
-  // className?: string;
-  // allUsers: UserDetails[];
+interface AllUserTableProps {
+  className?: string;
+  allUsers: UserDetails[];
 }
 
 interface Filters {
   status?: any;
 }
 
-const applyFilters = (
-  AllChapterGroups: IconDetails[],
-  filters: Filters
-): any[] => {
-  return AllChapterGroups.filter((category) => {
+const applyFilters = (AllUsers: UserDetails[], filters: Filters): any[] => {
+  return AllUsers.filter((user) => {
     let matches = true;
 
-    let statusString;
-    if (category.isActive === true) {
-      statusString = 'ACTIVE';
-      if (filters.status && statusString !== filters.status) {
-        matches = false;
-      }
-    } else {
-      statusString = 'INACTIVE';
-      if (filters.status && statusString !== filters.status) {
-        matches = false;
-      }
+    if (filters.status && user.verifiedStatus !== filters.status) {
+      matches = false;
     }
 
     return matches;
@@ -69,35 +53,23 @@ const applyFilters = (
 };
 
 const applyPagination = (
-  allIcons: IconDetails[],
+  allUsers: UserDetails[],
   page: number,
   limit: number
 ): any[] => {
-  return allIcons.slice(page * limit, page * limit + limit);
+  return allUsers.slice(page * limit, page * limit + limit);
 };
 
-interface Props {
-  AllIcons: IconDetails[];
-  setAllIcons: React.Dispatch<
-    React.SetStateAction<IconDetails[]>
-  >;
-}
-
-const AllIconTable: FC<Props> = ({
-    AllIcons,
-    setAllIcons
-}) => {
-  const [selectedAllIcons, setSelectedAllIcons] = useState<string[]>([]);
-  const selectedBulkActions = selectedAllIcons.length > 0;
+const AllUsersTable: FC = () => {
+  const [selectedAllUsers, setSelectedAllUsers] = useState<string[]>([]);
+  const selectedBulkActions = selectedAllUsers.length > 0;
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
   const [filters, setFilters] = useState<Filters>({
     status: null
   });
 
-  // const [allChapterGroups, setAllChapterGroups] = useState(
-  //   [] as ChapterGroupDetails[]
-  // );
+  const [allUsers, setAllUsers] = useState([] as UserDetails[]);
   const LIMIT_P_C = 10;
   const LIMIT_A_C = 10;
 
@@ -108,33 +80,30 @@ const AllIconTable: FC<Props> = ({
   const [seeMore_a_c, setSeeMore_a_c] = useState(false);
 
   useEffect(() => {
-    geticons();
+    getUsers();
   }, []);
 
-  const geticons = () => {
-    ManagementServices.getAllIcons(LIMIT_P_C, isOffset_p_c).then(
-      (res) => {
-        if (res.success) {
-          setAllIcons(res.data);
-          setSeeMore_p_c(res.data.length > 0 && res.data.length == LIMIT_P_C);
-        } else {
-          setSeeMore_p_c(false);
-        }
+  const getUsers = () => {
+    ManagementServices.getAllUsers(LIMIT_P_C, isOffset_p_c).then((res) => {
+      if (res.success) {
+        setAllUsers(res.data);
+        setSeeMore_p_c(res.data.length > 0 && res.data.length == LIMIT_P_C);
+      } else {
+        setSeeMore_p_c(false);
       }
-    );
+    });
   };
 
-  const updateCategory= (icon: IconDetails | undefined) => {
-    if (icon) {
+  const updateUser = (user: UserDetails | undefined) => {
+    if (user) {
       Swal.fire({
         title: 'Change Status',
         input: 'select',
-        inputOptions: activeStatus,
-        inputValue:
-        icon.isActive === true ? activeStatus.ACTIVE : activeStatus.INACTIVE,
+        inputOptions: VerifyStatus,
+        inputValue: user.verifiedStatus,
         inputAttributes: {
           autocapitalize: 'off',
-          placeholder: 'Update Status'
+          placeholder: 'Update User'
         },
         showCancelButton: true,
         confirmButtonText: 'Update',
@@ -154,11 +123,13 @@ const AllIconTable: FC<Props> = ({
             });
           } else {
             const data = {
-              iconId: icon?._id,
-              isActive: result.value === activeStatus.ACTIVE ? true : false
+              userId: user?._id,
+              email: user?.email,
+              name: user?.name,
+              verifiedStatus: result.value
             };
-            ManagementServices.updateIcon(data).then((res) => {
-              if (res.success) geticons();
+            ManagementServices.updateUser(data).then((res) => {
+              if (res.success) getUsers();
               else {
                 Swal.fire({
                   icon: 'error',
@@ -173,49 +144,22 @@ const AllIconTable: FC<Props> = ({
     }
   };
 
-  const deleteCategory = (iconId) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        ManagementServices.deleteIcon(iconId).then((res) => {
-          if (res.success) {
-            setAllIcons(
-                AllIcons.filter(
-                (IconDetails) => IconDetails._id !== iconId
-              )
-            );
-            Swal.fire('icon Removed');
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: res.error,
-              confirmButtonColor: '#FD7F00'
-            });
-          }
-        });
-      }
-    });
-  };
-
   const statusOptions = [
     {
       id: 'ALL',
       name: 'ALL'
     },
+    // {
+    //   id: 'PENDING',
+    //   name: 'PENDING'
+    // },
     {
-      id: 'ACTIVE',
-      name: 'ACTIVE'
+      id: 'VERIFIED',
+      name: 'VERIFIED'
     },
     {
-      id: 'INACTIVE',
-      name: 'INACTIVE'
+      id: 'BLOCKED',
+      name: 'BLOCKED'
     }
   ];
 
@@ -240,13 +184,11 @@ const AllIconTable: FC<Props> = ({
     setLimit(parseInt(event.target.value));
   };
 
-  const filteredAllIcons = applyFilters(AllIcons, filters);
-  const paginatedAllIcons = applyPagination(filteredAllIcons, page, limit);
+  const filteredAllUsers = applyFilters(allUsers, filters);
+  const paginatedAllUsers = applyPagination(filteredAllUsers, page, limit);
   const selectedSomeCryptoOrders =
-    selectedAllIcons.length > 0 &&
-    selectedAllIcons.length < AllIcons.length;
-  const selectedAllCryptoOrders =
-  selectedAllIcons.length === AllIcons.length;
+    selectedAllUsers.length > 0 && selectedAllUsers.length < allUsers.length;
+  const selectedAllCryptoOrders = selectedAllUsers.length === allUsers.length;
   const theme = useTheme();
 
   return (
@@ -278,7 +220,7 @@ const AllIconTable: FC<Props> = ({
                 </FormControl>
               </Box>
             }
-            title="Icons"
+            title="All stations"
           />
         )}
         <Divider />
@@ -286,39 +228,51 @@ const AllIconTable: FC<Props> = ({
           <Table>
             <TableHead>
               <TableRow>
-              <TableCell >Icon</TableCell>
-                <TableCell>Icon Name</TableCell>
-                <TableCell>Icon ID</TableCell>
+                {/* <TableCell padding="checkbox">
+                        <Checkbox
+                        color="primary"
+                        checked={selectedAllCryptoOrders}
+                        indeterminate={selectedSomeCryptoOrders}
+                        onChange={handleSelectAllCryptoOrders}
+                        />
+                    </TableCell> */}
+                <TableCell>User Name</TableCell>
+                <TableCell>User ID</TableCell>
+                <TableCell>Email</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody   style={{ backgroundColor: '#b6bab5' }}>
-              {AllIcons.map((icon) => {
+            <TableBody>
+              {paginatedAllUsers.map((user) => {
+                const isCryptoOrderSelected = selectedAllUsers.includes(
+                  user._id
+                );
                 return (
-                  <TableRow hover key={icon._id}>
+                  <TableRow
+                    hover
+                    key={user._id}
+                    selected={isCryptoOrderSelected}
+                  >
+                    {/* <TableCell padding="checkbox">
+                            <Checkbox
+                            color="primary"
+                            checked={isCryptoOrderSelected}
+                            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                                handleSelectOneCryptoOrder(event, user._id)
+                            }
+                            value={isCryptoOrderSelected}
+                            />
+                        </TableCell> */}
                     <TableCell>
-                    <Typography
+                      <Typography
                         variant="body1"
                         fontWeight="bold"
                         color="text.primary"
                         gutterBottom
                         noWrap
                       >
-                         {icon.icon && <img src={`data:image/svg+xml;base64,${icon.icon}`}/>}
-                        
-                      </Typography>
-                     
-                    </TableCell>
-                    <TableCell>
-                    <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        color="text.primary"
-                        gutterBottom
-                        noWrap
-                      >
-                        {icon.name}
+                        {user.name}
                       </Typography>
                       <Typography
                         variant="body2"
@@ -334,10 +288,9 @@ const AllIconTable: FC<Props> = ({
                         gutterBottom
                         noWrap
                       >
-                        {icon._id}
+                        {user._id}
                       </Typography>
                     </TableCell>
-                   
                     <TableCell>
                       <Typography
                         variant="body1"
@@ -346,29 +299,25 @@ const AllIconTable: FC<Props> = ({
                         gutterBottom
                         noWrap
                       >
-                        {icon.isActive === true ? 'ACTIVE' : 'INACTIVE'}
+                        {user.email}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {user.verifiedStatus}
                       </Typography>
                     </TableCell>
 
                     <TableCell align="right">
-                      {/* <Tooltip title="delete Group" arrow>
+                      <Tooltip title="Edit User" arrow>
                         <IconButton
-                          onClick={() => deleteCategory(category._id)}
-                          sx={{
-                            '&:hover': {
-                              background: theme.colors.primary.lighter
-                            },
-                            color: theme.palette.primary.main
-                          }}
-                          color="inherit"
-                          size="small"
-                        >
-                          <DeleteTwoTone fontSize="small" />
-                        </IconButton>
-                      </Tooltip> */}
-                      <Tooltip title="Edit Group" arrow>
-                        <IconButton
-                          onClick={() => updateCategory(icon)}
+                          onClick={() => updateUser(user)}
                           sx={{
                             '&:hover': {
                               background: theme.colors.primary.lighter
@@ -381,9 +330,8 @@ const AllIconTable: FC<Props> = ({
                           <EditTwoToneIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Delete Order" arrow>
+                      {/* <Tooltip title="Delete Order" arrow>
                             <IconButton
-                                onClick={() => deleteCategory(icon._id)}
                                 sx={{
                                 '&:hover': { background: theme.colors.error.lighter },
                                 color: theme.palette.error.main
@@ -393,7 +341,7 @@ const AllIconTable: FC<Props> = ({
                             >
                                 <DeleteTwoToneIcon fontSize="small" />
                             </IconButton>
-                            </Tooltip>
+                            </Tooltip> */}
                     </TableCell>
                   </TableRow>
                 );
@@ -404,7 +352,7 @@ const AllIconTable: FC<Props> = ({
         <Box p={2}>
           <TablePagination
             component="div"
-            count={filteredAllIcons.length}
+            count={filteredAllUsers.length}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleLimitChange}
             page={page}
@@ -417,12 +365,12 @@ const AllIconTable: FC<Props> = ({
   );
 };
 
-// AllGroupsTable.propTypes = {
-//   allGroups: PropTypes.array.isRequired
-// };
+AllUsersTable.propTypes = {
+  allUsers: PropTypes.array.isRequired
+};
 
-// AllGroupsTable.defaultProps = {
-//   allGroups: []
-// };
+AllUsersTable.defaultProps = {
+  allUsers: []
+};
 
-export default AllIconTable;
+export default AllUsersTable;

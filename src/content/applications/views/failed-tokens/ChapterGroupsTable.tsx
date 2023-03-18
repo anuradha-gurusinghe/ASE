@@ -30,7 +30,7 @@ import {
   DialogTitle,
   SelectChangeEvent
 } from '@mui/material';
-import BulkActions from '../../Transactions/BulkActions';
+import BulkActions from '../distribution/BulkActions';
 import numeral from 'numeral';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';

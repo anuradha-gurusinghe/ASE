@@ -17,7 +17,7 @@ import FilterComponent from 'src/components/filter';
 import axios from 'axios';
 
 const requestStatus = [
-  'WAITING',
+  'PENDING',
   'APPROVED',
   'FAILED',
   'CANCELED',
