@@ -63,10 +63,12 @@ const RestockesTokans = () => {
     if (status) {
       let am = 0;
       for (const d of data) {
+        console.log(d);
+        
         if (d.reqStatus === 'RE-STOCKS') {
           setRequests((prev) => [...prev, d]);
           setAllUsers((prev) => [...prev, d]);
-          am += +d.units;
+          am += +d.stocks;
         }
       }
 
@@ -174,7 +176,6 @@ const CreateAndUpdateSection = (props) => {
       />
 
       <InputComponent
-        type="number"
         label="Fuel units"
         value={unit}
         setValue={setUnit}
@@ -203,11 +204,9 @@ const ListSection = (props) => {
     >
       {items.map((item) => (
         <CardComponent
-          mainHeader={item.name}
-          dis={`Stocks - ${item.stocks}`}
           editHandler={editHandler}
           key={item.id}
-          {...item}
+          station={item.station}
         />
       ))}
     </div>

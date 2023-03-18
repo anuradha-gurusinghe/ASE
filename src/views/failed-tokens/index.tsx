@@ -60,8 +60,6 @@ const FailedTokans = () => {
     }
   }, [station]);
 
-  console.log(failedStattion);
-
   useEffect(() => {
     if (search) {
       const searchedUsers = allUsers.filter((user) =>
@@ -75,12 +73,18 @@ const FailedTokans = () => {
 
   const getUserData = async () => {
     setIsLoading(true);
+    setRequests([]);
+    setAllUsers([]);
     const response = await getAllData('requests');
     setIsLoading(false);
     const { status, data } = response;
     if (status) {
       for (const d of data) {
-        if (d.reqStatus === 'APPROVED' && new Date(d.date) < new Date()) {
+        const date = d.date.split('/');
+
+        const correctDate = `${date[2]}-${date[1]}-${date[0]}`;
+
+        if (d.reqStatus === 'APPROVED' && new Date(correctDate) < new Date()) {
           setRequests((prev) => [...prev, d]);
           setAllUsers((prev) => [...prev, d]);
         }
@@ -142,7 +146,7 @@ const CreateAndUpdateSection = (props) => {
     stations
   } = props;
 
-  const [name, setTitle] = useState('');
+  const [name, setName] = useState('');
   const [date, setDate] = useState('');
   const [userId, setUserId] = useState('');
   const [status, setStatus] = useState('');
@@ -155,35 +159,33 @@ const CreateAndUpdateSection = (props) => {
 
   useEffect(() => {
     if (fuReqs) {
-      const { station, stocks, reqStatus, date, time, units } = fuReqs;
-      setTitle(station);
+      const { station, stocks, reqStatus, date, time, fualAmount } = fuReqs;
+      console.log(fuReqs);
+
+      setName(station);
       setStatus(reqStatus);
       setStocks(stocks);
       setDate(date);
       setTime(time);
-      setUnit(units);
+      setUnit(fualAmount);
 
       const allSt = [...stations];
       const findSt = allSt.find((s) => s.name === station);
+      console.log(findSt);
+
       setcorrectSt(findSt);
     }
   }, [fuReqs]);
-
-  console.log(correctSt);
 
   const sendStockToStation = async () => {
     // update the station units
 
     setIsLoading(true);
     const doc = {
-      name,
-      stocks,
-      reqStatus: 'RE-STOCKS',
-      date,
-      time
+      reqStatus: 'RE-STOCKS'
     };
     Object.keys(doc).forEach((k) => doc[k] == null && delete doc[k]);
-    // await updateData('requests', fuReqs.id, doc);
+    await updateData('requests', fuReqs.id, doc);
 
     // update the request status
     await updateData('stations', correctSt.id, {
@@ -232,12 +234,11 @@ const CreateAndUpdateSection = (props) => {
       <InputComponent
         label="Station Name!"
         value={name}
-        setValue={setTitle}
+        setValue={setName}
         disabled={true}
       />
 
       <InputComponent
-        type="number"
         label="Fuel units"
         value={unit}
         setValue={setUnit}
@@ -276,7 +277,6 @@ const ListSection = (props) => {
     >
       {items.map((item) => (
         <CardComponent
-          mainHeader={item.name}
           dis={`Stocks - ${item.stocks}`}
           editHandler={editHandler}
           key={item.id}
